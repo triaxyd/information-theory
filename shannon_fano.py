@@ -28,26 +28,26 @@ def get_stats(symbols_list):
     for symbol in stats:
         stats[symbol]['log2'] = - np.log2(stats[symbol]['prob'])
         stats[symbol]['w_len'] = int(np.ceil(stats[symbol]['log2']))
-    
+        
     return stats
 
 
 def divide_list(stats,prefix=""):
     total_prob = 0.0
-    for item in stats:
-        total_prob += item[1]['prob'] 
+    for symbol in stats:
+        total_prob += symbol[1]['prob'] 
 
     current_prob = 0.0
     split_index = 0
 
     # Find the index to divide the list in half based on probability
-    for item in stats:
-        current_prob += item[1]['prob']
+    for symbol in stats:
+        current_prob += symbol[1]['prob']
         if current_prob >= total_prob / 2:
-            if current_prob - (total_prob / 2) > (total_prob / 2) - (current_prob - item[1]['prob']):
-                split_index = stats.index(item) - 1
+            if current_prob - (total_prob / 2) > (total_prob / 2) - (current_prob - symbol[1]['prob']):
+                split_index = stats.index(symbol) - 1
             else:
-                split_index = stats.index(item)
+                split_index = stats.index(symbol)
             break
 
     # Divide the list in half
@@ -58,12 +58,12 @@ def divide_list(stats,prefix=""):
     if(len(left_part) == 1):
         left_part[0][1]['code'] = prefix + "0"
     else:    
-        left_divided = divide_list(left_part,prefix + "0")
+        divide_list(left_part,prefix + "0")
 
     if(len(right_part) == 1):
         right_part[0][1]['code'] = prefix + "1"
     else:
-        right_divided = divide_list(right_part,prefix + "1")
+        divide_list(right_part,prefix + "1")
     
     # Merge the two lists
     merged_list = left_part + right_part
@@ -88,8 +88,8 @@ def shannon_fano(file):
 
     # Sort the coded list based on symbols in ascending order
     sorted_codes = sorted(coded_list, key=lambda x: x[0], reverse=False)
-    for item in sorted_codes:
-        print(item[0] + " - Occurences: " + str(item[1]['occ']) + " - Probability: " + str(round(item[1]['prob'],5)) + " - Expected Length: " + str(item[1]['w_len']) + " - Code: " + str(item[1]['code']))
+    for symbol in sorted_codes:
+        print(symbol[0] + " - Occurences: " + str(symbol[1]['occ']) + " - Probability: " + str(round(symbol[1]['prob'],5)) + " - Expected Length: " + str(symbol[1]['w_len']) + " - Code: " + str(symbol[1]['code']))
         print("*********************")
     
 
