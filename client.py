@@ -6,6 +6,7 @@ import shannon_fano
 import linear_encoding
 import entropy
 
+import binascii
 import requests
 import cv2
 import hashlib
@@ -42,29 +43,39 @@ print(pixels)
 '''
 
 
-
-
 # Read file
 
-with open('myfile.txt', 'r', encoding='utf-8') as file:
-    file_content = file.read()
-    compressed = shannon_fano.shannon_fano(file_content)
-    encoded = linear_encoding.encode(compressed)
-    parameters = 0
-    errors = 0
-    ent = entropy.calc_ent(file_content)
-    #sha256 = hashlib.sha256(encoded).hexdigest()
-    sha256 = 0
-    #send json to the server
-    message = { 'encoded-message': compressed,
-                'compression-algorithm':'fano-shannon',
-                'encoding':'linear',
-                'parameters':0,
-                'errors':0,
-                'SHA256':sha256,
-                'entropy':ent
-            }
-    response = requests.post('http://localhost:7500/upload', json=message)
+file = open(chosenFile, 'r', encoding='utf-8').read()
+# Compress file
+compressed_file = shannon_fano.shannon_fano(file)
+
+# Encode file
+encoded = linear_encoding.encode(compressed_file)
+
+# Parameters
+parameters = 0
+
+# Errors
+errors = 0
+
+# Entropy
+ent = entropy.calc_ent(file)
+
+# SHA256
+#sha256 = hashlib.sha256(encoded).hexdigest()
+sha256 = 0
+
+# Send JSON to server
+message = { 'encoded-message': compressed_file,
+            'compression-algorithm':'fano-shannon',
+            'encoding':'linear',
+            'parameters':0,
+            'errors':0,
+            'SHA256':sha256,
+            'entropy':ent
+        }
+
+response = requests.post('http://localhost:7500/upload', json=message)
 
 # Check the response from the server
 print("Status code:",response.status_code)

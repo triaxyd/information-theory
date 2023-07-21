@@ -4,7 +4,31 @@ import numpy as np
 
 
 
+
+def compress(file,stats):
+    # Turn file to binary based on codings
+    compressed_file = ""
+    for symbol in file:
+        if symbol in stats:
+            compressed_file += stats[symbol]['code']
+    return compressed_file
+
+
+def decompress(file,stats):
+    # Turn binary file to symbols based on codings
+    decompressed_file = ""
+    current_code = ""
+    for symbol in file:
+        current_code += symbol
+        for key in stats:
+            if current_code == stats[key]['code']:
+                decompressed_file += key
+                current_code = ""
+                break
+    return decompressed_file
+
 def make_list(file):
+    # Create a list with all symbols
     symbols_list = []
     for symbol in file:
         symbols_list.append(symbol)
@@ -12,6 +36,7 @@ def make_list(file):
 
 
 def get_stats(symbols_list):
+    # Create a dictionary with symbol stats
     stats = {}
     for symbol in symbols_list:
         if symbol in stats:
@@ -40,7 +65,7 @@ def divide_list(stats,prefix=""):
     current_prob = 0.0
     split_index = 0
 
-    # Find the index to divide the list in half based on probability
+    # Find the index to divide the list based on probability
     for symbol in stats:
         current_prob += symbol[1]['prob']
         if current_prob >= total_prob / 2:
@@ -50,7 +75,7 @@ def divide_list(stats,prefix=""):
                 split_index = stats.index(symbol)
             break
 
-    # Divide the list in half
+    # Divide the list 
     left_part = stats[:split_index + 1]
     right_part = stats[split_index + 1:]
 
@@ -87,10 +112,19 @@ def shannon_fano(file):
 
 
     # Sort the coded list based on symbols in ascending order
-    sorted_codes = sorted(coded_list, key=lambda x: x[0], reverse=False)
-    for symbol in sorted_codes:
+    sorted_stats = sorted(coded_list, key=lambda x: x[0], reverse=False)
+
+    for symbol in sorted_stats:
         print(symbol[0] + " - Occurences: " + str(symbol[1]['occ']) + " - Probability: " + str(round(symbol[1]['prob'],5)) + " - Expected Length: " + str(symbol[1]['w_len']) + " - Code: " + str(symbol[1]['code']))
         print("*********************")
+    
+    # Compress the file
+    return compress(file,stats)
+
+
+        
+
+
     
 
 
