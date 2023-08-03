@@ -4,7 +4,6 @@ import numpy as np
 
 
 
-
 def compress(file,stats):
     # Turn file to binary based on codings
     compressed_file = ""
@@ -114,10 +113,13 @@ def shannon_fano(file):
     # Sort the coded list based on symbols in ascending order
     sorted_stats = sorted(coded_list, key=lambda x: x[0], reverse=False)
 
+    '''
+    # Print the stats
     for symbol in sorted_stats:
         print(symbol[0] + " - Occurences: " + str(symbol[1]['occ']) + " - Probability: " + str(round(symbol[1]['prob'],5)) + " - Expected Length: " + str(symbol[1]['w_len']) + " - Code: " + str(symbol[1]['code']))
         print("*********************")
-    
+    '''
+
     # Compress the file
     return compress(file,stats)
 

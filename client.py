@@ -2,75 +2,107 @@
 
 #!/usr/bin/env sage -python
 
-import shannon_fano
-import linear_encoding
-import entropy
-
 import binascii
-import requests
-import cv2
+import random
+import shannon_fano
+import linear_coding
+import entropy
 import hashlib
-from PIL import Image
-from io import BytesIO
-import numpy as np
+import requests
 
 
+# Calculate SHA256
+def calcSHA256(file):
+    sha256 = hashlib.sha256(file.encode('utf-8')).hexdigest()
+    return sha256
 
+
+# Add errors
+def addErrors(encoded,errors_percentage):
+    # Turn encoded to list
+    encoded_list = [int(bit) for bit in encoded]
+
+    # Add errors
+    total_bits = len(encoded_list)
+    num_errors = int(total_bits * errors_percentage / 100)
+    error_positions = random.sample(range(total_bits), num_errors)
+    
+    # Flip bits in error positions
+    for pos in error_positions:
+        encoded_list[pos] = 1 - encoded_list[pos]
+    
+    # Turn list to string
+    error_encoded = ''.join(str(bit) for bit in encoded_list)
+    return error_encoded
+
+
+# Count errors
+def countErrors(encoded,erros_encoded):
+    errors = 0
+    for i in range(len(encoded)):
+        if encoded[i] != erros_encoded[i]:
+            errors += 1
+    return errors
+
+
+# Choose file and error length
 while(True):
     try:
-        userChoice = int(input("\n\t***\n\t1.cat.jpg\n\t2.windows.jpg\n\t3.myfile.txt\n\t***\nChoose File:"))
+        userChoice = int(input("\n\t***\n\t1.myfile.txt\n\t2.myfile2.txt\n\t***\nChoose File:"))
         if userChoice == 1:
-            raise ValueError
-            continue
-        elif userChoice == 2:
-            continue
-            chosenFile = "windows.jpg"
-        elif userChoice == 3:
             chosenFile = "myfile.txt"
+        elif userChoice == 2:
+            chosenFile = "myfile2.txt"
         else:
             raise ValueError
-        userError =  int(input("Error length (%): "))
+        userError =  float(input("Error length (%): "))
         if userError>=0 and userError<=100:
             break
         raise ValueError
     except ValueError:
         print("Wrong input try again")
 
-'''
-img = Image.open(chosenFile)
-pixels = list(img.getdata())
-print(pixels)
-'''
-
-
 # Read file
-
 file = open(chosenFile, 'r', encoding='utf-8').read()
+
+# Get the SHA256 of the file
+sha256 = calcSHA256(file)
+
 # Compress file
 compressed_file = shannon_fano.shannon_fano(file)
 
-# Encode file
-encoded = linear_encoding.encode(compressed_file)
+# Get Generator matrix
+G = linear_coding.getGeneratorMatrix()
 
-# Parameters
-parameters = 0
+# Encode file
+encoded = linear_coding.encode_hamming(compressed_file,G)
+
+# Add errors
+errors_encoded = addErrors(encoded,userError)
+
+# Turn encoded to base64
+encoded_base64 = binascii.b2a_base64(errors_encoded.encode('utf-8'))
+
+# Parameters (turn matrix to list for JSON)
+parameters = G.tolist()
 
 # Errors
-errors = 0
+errors = countErrors(encoded,errors_encoded)
 
 # Entropy
 ent = entropy.calc_ent(file)
 
-# SHA256
-#sha256 = hashlib.sha256(encoded).hexdigest()
-sha256 = 0
+print("Message with errors:",errors_encoded)
+print("Message after encoding:",encoded)
+print("Message after compression:",compressed_file)
+
 
 # Send JSON to server
-message = { 'encoded-message': compressed_file,
-            'compression-algorithm':'fano-shannon',
+message = { 'encoded-message': encoded_base64.decode('utf-8'),
+            'compression-algorithm':'shannon-fano',
             'encoding':'linear',
-            'parameters':0,
-            'errors':0,
+            'parameters': parameters,
+            'errors': errors,
             'SHA256':sha256,
             'entropy':ent
         }
