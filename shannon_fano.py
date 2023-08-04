@@ -14,16 +14,12 @@ def compress(file,stats):
 
 
 def decompress(file,stats):
-    # Turn binary file to symbols based on codings
+    # Turn file to binary based on codings
     decompressed_file = ""
-    current_code = ""
     for symbol in file:
-        current_code += symbol
         for key in stats:
-            if current_code == stats[key]['code']:
+            if symbol == stats[key]['code']:
                 decompressed_file += key
-                current_code = ""
-                break
     return decompressed_file
 
 def make_list(file):

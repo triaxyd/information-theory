@@ -1,7 +1,5 @@
 #Triantafyllos Xydis
 
-#!/usr/bin/env sage -python
-
 import binascii
 import random
 import shannon_fano

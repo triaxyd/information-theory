@@ -2,7 +2,6 @@
 
 import binascii
 
-
 import shannon_fano
 import linear_coding
 
@@ -16,6 +15,9 @@ app = Flask(__name__)
 @app.route('/upload', methods=['POST'])
 def upload_file():
     received_json = request.get_json()
+    print("**********\n")
+    print("SERVER RECEIVED\n\n",received_json)
+    print("\n**********")
     encoded_message = received_json['encoded-message']
     compression_algorithm = received_json['compression-algorithm']
     encoding = received_json['encoding']
@@ -34,16 +36,18 @@ def upload_file():
     # Decode file
     decoded = linear_coding.decode_hamming(message,G)
 
-    print("Decoded message:",decoded)
+    # Decompress file
+    #decompressed_file = shannon_fano.decompress(decoded)
 
 
 
-    print (f'Encoded Message:{encoded_message}\nCompression Algorithm:{compression_algorithm}\nEncoding:{encoding}\nParameters:{parameters}\nErrors:{errors}\nSHA256:{sha256}\nEntropy:{entropy}')
+
+
     response = {
         'status':'success',
         'message':'Message received'
     }
-    #print(received_json)
+    #print (f'Encoded Message:{encoded_message}\nCompression Algorithm:{compression_algorithm}\nEncoding:{encoding}\nParameters:{parameters}\nErrors:{errors}\nSHA256:{sha256}\nEntropy:{entropy}')
     return jsonify(response)
 
 
