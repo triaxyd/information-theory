@@ -3,24 +3,29 @@
 import numpy as np
 
 
-
 def compress(file,stats):
     # Turn file to binary based on codings
     compressed_file = ""
     for symbol in file:
-        if symbol in stats:
-            compressed_file += stats[symbol]['code']
+        for key in stats:
+            if symbol == key[0]:
+                compressed_file += key[1]['code']
     return compressed_file
 
 
 def decompress(file,stats):
     # Turn file to binary based on codings
     decompressed_file = ""
-    for symbol in file:
+    current_code = ""
+    for bit in file:
+        current_code += bit
         for key in stats:
-            if symbol == stats[key]['code']:
-                decompressed_file += key
+            if current_code == key[1]['code']:
+                decompressed_file += key[0]
+                current_code = ""
+                break
     return decompressed_file
+
 
 def make_list(file):
     # Create a list with all symbols
@@ -105,9 +110,9 @@ def shannon_fano(file):
     # Divide the list recursively and add prefix to each symbol
     coded_list = divide_list(sorted_stats)
 
-
     # Sort the coded list based on symbols in ascending order
     sorted_stats = sorted(coded_list, key=lambda x: x[0], reverse=False)
+
 
     '''
     # Print the stats
@@ -117,18 +122,4 @@ def shannon_fano(file):
     '''
 
     # Compress the file
-    return compress(file,stats)
-
-
-        
-
-
-    
-
-
-
-
-
-
-
-
+    return compress(file,sorted_stats) , sorted_stats
