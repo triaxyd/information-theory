@@ -73,33 +73,18 @@ sha256_file = sha256(file.encode('utf-8')).hexdigest()
 # Compress file
 compressed_file , stats = shannon_fano.shannon_fano(file)
 
-# Get Generator matrix
-G = linear_coding.getGeneratorMatrix()
+# Encoding
 
-# Encode file
-encoded = linear_coding.encode_hamming(compressed_file,G)
-
-# Add errors
-errors_encoded = addErrors(encoded,userError)
-
-# Turn encoded to base64
-encoded_base64 = binascii.b2a_base64(errors_encoded.encode('utf-8'))
-
-# Parameters will be a 2D array that contains the generator matrix and the stats
-parameters = [G.tolist(),stats]
-
-# Errors
-errors = countErrors(encoded,errors_encoded)
 
 # Entropy
 ent = calc_ent(file)
 
 # Send JSON to server
-message = { 'encoded-message': encoded_base64.decode('utf-8'),
+message = { 'encoded-message': 0,
             'compression-algorithm':'shannon-fano',
             'encoding':'linear',
-            'parameters': parameters,
-            'errors': errors,
+            'parameters': 0,
+            'errors': 0,
             'SHA256':sha256_file,
             'entropy':ent
         }
