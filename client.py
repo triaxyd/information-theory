@@ -19,13 +19,11 @@ def addErrors(encoded,errors_percentage):
     # Add errors
     total_bits = len(encoded_list)
 
-
     num_errors = int(total_bits * errors_percentage / 100)
 
     # Get random positions for errors and try to spread them evenly
-    # Spead errors evenly (this version goes up to 14.287% errors)
-    # The random version goes up to ~0.5% errors
-    
+    # 2 Different ways to do it, 1 random and 1 evenly
+
     #error_positions = random.sample(range(total_bits), num_errors)
     error_positions = []
     for i in range(num_errors):
@@ -74,7 +72,6 @@ sha256_file = sha256(file.encode('utf-8')).hexdigest()
 
 # Compress file
 compressed_file , stats = shannon_fano.shannon_fano(file)
-
 
 # Get Generator matrix
 G = linear_coding.getGeneratorMatrix()
