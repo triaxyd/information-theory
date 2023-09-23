@@ -19,7 +19,11 @@ def upload_file():
     encoded_message = received_json['encoded-message']
     compression_algorithm = received_json['compression-algorithm']
     encoding = received_json['encoding']
-    stats = received_json['parameters']
+    parameters = received_json['parameters']
+
+    stats = parameters[0]
+    padding = parameters[1]
+
     errors = received_json['errors']
     received_sha256 = received_json['SHA256']
     entropy = received_json['entropy']
@@ -29,6 +33,9 @@ def upload_file():
 
     # Decode Hamming
     decoded , errors_fixed = decode(message)
+
+    # Remove padding
+    decoded = decoded[0:len(decoded)-padding]
     
     # Decompress file
     decompressed_file = decompress(decoded,stats)
