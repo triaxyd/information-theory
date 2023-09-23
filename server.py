@@ -1,8 +1,6 @@
-#Triantafylos Xydis
 
-
-import shannon_fano
-import linear_coding
+from shannon_fano import decompress
+from linear_coding import decode
 
 import numpy as np
 import binascii
@@ -21,26 +19,19 @@ def upload_file():
     encoded_message = received_json['encoded-message']
     compression_algorithm = received_json['compression-algorithm']
     encoding = received_json['encoding']
-    parameters = received_json['parameters']
-
-    # Generator matrix is at the first position of the parameters array
-    G = np.asmatrix(parameters[0])
-    # Stats are at the second position of the parameters array
-    stats = parameters[1]
-
+    stats = received_json['parameters']
     errors = received_json['errors']
     received_sha256 = received_json['SHA256']
     entropy = received_json['entropy']
-
-    # Decode base64
+    
+    # Decode base64 message to binary
     message = binascii.a2b_base64(encoded_message).decode('utf-8')
 
-    # Decode file
-    decoded , errors_fixed = linear_coding.decode_hamming(message,G)
-
-
+    # Decode Hamming
+    decoded , errors_fixed = decode(message)
+    
     # Decompress file
-    decompressed_file = shannon_fano.decompress(decoded,stats)
+    decompressed_file = decompress(decoded,stats)
 
     # Calculate SHA256
     sha256_server = sha256(decompressed_file.encode('utf-8')).hexdigest()
@@ -62,13 +53,13 @@ def upload_file():
     print("SHA256: ", sha256_server)
     print("\n\n**********\n")
 
-
+    
     if received_sha256 == sha256_server and entropy == ent:
         return jsonify({'message': 'File received successfully!',
                         'errors': errors_fixed,
                         'entropy': ent,
                         'SHA256': sha256_server
-        })
+        }) , 200
     else:
         return jsonify({'message': 'File corrupted!',
                         'errors': errors_fixed,

@@ -1,9 +1,9 @@
-#Triantafyllos Xydis
 
 import binascii
 import random
-import shannon_fano
-import linear_coding
+
+from shannon_fano import compress,shannon_fano
+from linear_coding import encode
 import requests
 
 from entropy import calc_ent
@@ -70,21 +70,55 @@ file = open(chosenFile, 'r', encoding='utf-8').read()
 # Get the SHA256 of the file
 sha256_file = sha256(file.encode('utf-8')).hexdigest()
 
+# Get stats
+stats = shannon_fano(file)
+
 # Compress file
-compressed_file , stats = shannon_fano.shannon_fano(file)
+compressed_file = compress(file,stats)
+
+print(stats)
+print(len(compressed_file))
+print(compressed_file)
+
+# Add 0s to the end of file to make it divisible by 4
+padding = 0
+while len(compressed_file) % 4 != 0:
+    compressed_file += '0'
+    padding += 1 
+
+print(len(compressed_file))
+print(compressed_file)
 
 # Encoding
+encoded_file = encode(compressed_file)
 
+print(len(encoded_file))
+print(encoded_file)
+
+# Add errors
+errors_encoded = addErrors(encoded_file,userError)
+print(len(errors_encoded))
+print(errors_encoded)
+
+# Count errors
+errors = countErrors(encoded_file,errors_encoded)
+print(errors)
 
 # Entropy
 ent = calc_ent(file)
 
+# Turn to base64
+encoded_file = binascii.b2a_base64(encoded_file.encode('utf-8')).decode('utf-8')
+print(encoded_file)
+parameters = [stats,padding]
+
+
 # Send JSON to server
-message = { 'encoded-message': 0,
+message = { 'encoded-message': encoded_file,
             'compression-algorithm':'shannon-fano',
             'encoding':'linear',
-            'parameters': 0,
-            'errors': 0,
+            'parameters': parameters,
+            'errors': errors,
             'SHA256':sha256_file,
             'entropy':ent
         }
@@ -92,7 +126,6 @@ message = { 'encoded-message': 0,
 response = requests.post('http://localhost:7500/upload', json=message)
 
 # Check the response from the server
-
 print("\nMessage from server:",response.text)
 print("Status code:",response.status_code)
 print("\nCLIENT TERMINATED\n")

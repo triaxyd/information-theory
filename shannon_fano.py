@@ -1,4 +1,3 @@
-#Triantafyllos Xydis
 
 import numpy as np
 
@@ -44,16 +43,15 @@ def get_stats(symbols_list):
         else:
             stats[symbol] = {'occ': 1 , 'prob': 0 ,'log2' : 0 , 'w_len': 0 , 'code': ''}
 
-    #count the probability of each symbol
+    # Count the probability of each symbol
     total_symbols = len(symbols_list)
     for symbol in stats:
         stats[symbol]['prob'] = stats[symbol]['occ'] / total_symbols
 
-    #get log2 and word length of each symbol
+    # Get log2 and word length of each symbol
     for symbol in stats:
         stats[symbol]['log2'] = - np.log2(stats[symbol]['prob'])
         stats[symbol]['w_len'] = int(np.ceil(stats[symbol]['log2']))
-        
     return stats
 
 
@@ -121,5 +119,5 @@ def shannon_fano(file):
         print("*********************")
     '''
 
-    # Compress the file
-    return compress(file,sorted_stats) , sorted_stats
+    # Return the result of the algorithm
+    return sorted_stats
