@@ -4,7 +4,7 @@ import binascii
 import requests
 import base64
 
-from PIL import Image
+from PIL import Image , ImageDraw , ImageFont
 from hashlib import sha256
 from shannon_fano import compress,shannon_fano
 from linear_coding import encode
@@ -82,11 +82,26 @@ else:
     with open(chosenFile,'rb') as image:
         base64_image = base64.b64encode(image.read())
         file = base64_image.decode('utf-8')
-
     
+    # Show image and add caption to image
+    img = Image.open(chosenFile)
 
-img = Image.open(chosenFile)
-img.show()
+    # Add caption as a text overlay
+    caption = "CLIENT IMAGE"
+    draw = ImageDraw.Draw(img)
+    font = ImageFont.load_default() 
+
+    # Position of the text
+    position = (10, 10)  
+    draw.text(position, caption, font=font, fill="white")
+
+    # Show image
+    img.show()
+
+    # Remove the image.jpg file
+    if os.path.exists("image.jpg"):
+        os.remove("image.jpg")
+
 # Get the SHA256 of the file
 sha256_file = sha256(file.encode('utf-8')).hexdigest()
 
@@ -118,7 +133,7 @@ ent = calc_ent(file)
 # Turn to base64
 encoded_file = binascii.b2a_base64(errors_encoded.encode('utf-8')).decode('utf-8')
 
-parameters = [stats,padding]
+parameters = [stats,padding,userOption]
 
 # Send JSON to server
 message = { 'encoded-message': encoded_file,

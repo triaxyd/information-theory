@@ -1,9 +1,7 @@
 
 import numpy as np
 
-# The 4 bit data is encoded into a 7 bit codeword using Hammings algorithm (7,4)
-# The bits that are powers of 2 are parity bits in the codeword, the rest are data bits
-# The 7 bit codeword is then decoded back to the original 4 bit data 
+# Hamming code (7,4)
 
 def create_G():
     # Create generator matrix G
