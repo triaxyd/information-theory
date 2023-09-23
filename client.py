@@ -64,7 +64,7 @@ while(True):
 
 
 if userOption == 1:
-    chosenFile = "myfile.txt"
+    chosenFile = "lorem.txt"
     file = open(chosenFile, 'r', encoding='utf-8').read()
 else:
     chosenFile = "dog.png"
