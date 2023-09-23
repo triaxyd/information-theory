@@ -11,8 +11,6 @@ from linear_coding import encode
 from entropy import calc_ent
 
 
-
-# Add errors
 def addErrors(encoded,errors_percentage):
     # Turn encoded to list
     encoded_list = [int(bit) for bit in encoded]
@@ -40,7 +38,6 @@ def addErrors(encoded,errors_percentage):
     return error_encoded
 
 
-
 # Count errors
 def countErrors(encoded,errors_encoded):
     errors = 0
@@ -48,7 +45,6 @@ def countErrors(encoded,errors_encoded):
         if encoded[i] != errors_encoded[i]:
             errors += 1
     return errors
-
 
 
 print("\n**********\n")
@@ -72,30 +68,22 @@ if userOption == 1:
     file = open(chosenFile, 'r', encoding='utf-8').read()
 else:
     chosenFile = "dog.png"
-    if os.path.exists(chosenFile):
-        print(f"File '{chosenFile}' exists.")
-    else:
-        print(f"File '{chosenFile}' does not exist.")
+    if not(os.path.exists(chosenFile)):
         exit()
-    
+
     # Open image
     with open(chosenFile,'rb') as image:
         base64_image = base64.b64encode(image.read())
         file = base64_image.decode('utf-8')
     
-    # Show image and add caption to image
+    # Show image and add caption
     img = Image.open(chosenFile)
 
-    # Add caption as a text overlay
     caption = "CLIENT IMAGE"
     draw = ImageDraw.Draw(img)
     font = ImageFont.load_default() 
-
-    # Position of the text
     position = (10, 10)  
     draw.text(position, caption, font=font, fill="white")
-
-    # Show image
     img.show()
 
     # Remove the image.jpg file
@@ -116,7 +104,6 @@ padding = 0
 while len(compressed_file) % 4 != 0:
     compressed_file += '0'
     padding += 1 
-
 
 # Encoding
 encoded_file = encode(compressed_file)

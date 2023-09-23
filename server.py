@@ -1,7 +1,6 @@
 
 import base64
 import binascii
-import numpy as np
 import os
 
 from PIL import Image, ImageDraw, ImageFont , UnidentifiedImageError
@@ -53,12 +52,11 @@ def upload_file():
     ent = round(ent,5)
     entropy = round(entropy,5)
 
-
-    
-
+    # If the message is text then print it
     if message_type == 1:
         print("\n*FINAL MESSAGE:\n ", decompressed_file)
     else:
+        # The message is image
         try:
             # Turn base64 string to image and show it
             imgdata = base64.b64decode(decompressed_file)

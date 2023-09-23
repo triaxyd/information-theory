@@ -4,8 +4,7 @@ import numpy as np
 # Hamming code (7,4)
 
 def create_G():
-    # Create generator matrix G
-
+    # Create G (generator matrix)
     # Identity matrix represents the data bits
     I = np.identity(4)
 
