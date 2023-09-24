@@ -111,7 +111,8 @@ def upload_file():
         }) , 200
     else:
         return jsonify({'message': 'THE FILE WAS CORRUPTED DURING TRANSMISSION!',
-                        'errors': errors_fixed,
+                        'errors': errors,
+                        'fixedErrors': errors_fixed,
                         'entropy': ent,
                         'originalEntropy': entropy,
                         'originalSHA256': received_sha256,
